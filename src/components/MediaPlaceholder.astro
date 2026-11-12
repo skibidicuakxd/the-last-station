@@ -1,0 +1,61 @@
+---
+import { publicFileExists } from '../lib/media';
+import { film } from '../content/film';
+
+interface Props {
+  src: string;
+  alt: string;
+  dimensions: string;
+  ratio?: '3-4' | '16-9' | '3-2';
+  label?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  src,
+  alt,
+  dimensions,
+  ratio = '3-4',
+  label = film.labels.photoPending,
+  class: className,
+  loading = 'lazy',
+} = Astro.props;
+
+const exists = publicFileExists(src);
+const fileName = src.split('/').pop() ?? src;
+
+const sizes = {
+  '3-4': { width: 900, height: 1200 },
+  '16-9': { width: 1600, height: 900 },
+  '3-2': { width: 1600, height: 1067 },
+} as const;
+
+const { width, height } = sizes[ratio];
+---
+
+<div class:list={['media', `media--${ratio}`, className]}>
+  {
+    exists ? (
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding="async"
+      />
+    ) : (
+      <div
+        class="media__frame"
+        role="img"
+        aria-label={`${label}. ${alt} Archivo ${fileName}, ${dimensions}.`}
+      >
+        <span class="media__label">{label}</span>
+        <span class="media__name">{fileName}</span>
+        <span class="media__dims">{dimensions}</span>
+      </div>
+    )
+  }
+  <slot />
+</div>

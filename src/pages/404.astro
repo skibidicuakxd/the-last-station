@@ -1,0 +1,159 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { film } from '../content/film';
+---
+
+<BaseLayout
+  title={`Andén no encontrado — ${film.title}`}
+  description="La vía termina aquí. Vuelve a la estación principal para consultar la función de The Last Station."
+  noindex
+>
+  <header class="notfound__header">
+    <div class="container notfound__bar">
+      <a class="notfound__brand" href="/" aria-label={`${film.title} — inicio`}>
+        <span class="notfound__mark">TLS</span>
+        <span class="mono">THE LAST STATION</span>
+      </a>
+      <p class="mono smoke">Error 404</p>
+    </div>
+  </header>
+
+  <main class="notfound" id="contenido" tabindex="-1">
+    <div class="notfound__rails" aria-hidden="true"></div>
+    <p class="notfound__code display" aria-hidden="true">00</p>
+
+    <div class="container notfound__inner">
+      <p class="eyebrow">
+        <span class="eyebrow__num">TLS / 2026</span>
+        <span class="eyebrow__rule"></span>
+        <span>Fin de la vía</span>
+      </p>
+
+      <h1 class="notfound__title display">
+        Andén<br />
+        no encontrado
+      </h1>
+
+      <p class="notfound__text">
+        Esta vía no lleva a ninguna parte. La función sigue en la estación principal.
+      </p>
+
+      <a class="btn btn--solid" href="/">
+        <span class="btn__mark" aria-hidden="true"></span>
+        Volver al andén
+      </a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .notfound__header {
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .notfound__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--nav-h);
+  }
+
+  .notfound__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.75rem;
+    color: var(--bone);
+    text-decoration: none;
+  }
+
+  .notfound__brand .mono {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+  }
+
+  .notfound__mark {
+    padding: 0.25rem 0.38rem;
+    border: 1px solid var(--signal);
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.12rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .notfound__bar > .mono {
+    font-size: 0.62rem;
+  }
+
+  .notfound {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - var(--nav-h));
+    overflow: hidden;
+    padding-block: clamp(3rem, 8vw, 6rem);
+    background:
+      radial-gradient(ellipse 55% 45% at 70% 55%, rgba(215, 162, 62, 0.06), transparent 70%),
+      var(--ink);
+    isolation: isolate;
+  }
+
+  .notfound__rails {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(115deg, transparent 49.8%, var(--line) 49.8%, var(--line) 50%, transparent 50%),
+      linear-gradient(65deg, transparent 49.8%, var(--line) 49.8%, var(--line) 50%, transparent 50%);
+    opacity: 0.6;
+    transform-origin: center bottom;
+  }
+
+  .notfound__rails::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--ink) 4%, transparent 65%);
+  }
+
+  .notfound__code {
+    position: absolute;
+    right: -0.05em;
+    bottom: -0.16em;
+    z-index: -1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(233, 227, 213, 0.12);
+    font-size: clamp(12rem, 38vw, 34rem);
+    line-height: 0.7;
+    letter-spacing: -0.06em;
+    user-select: none;
+  }
+
+  .notfound__inner {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+  }
+
+  .notfound__title {
+    font-size: clamp(3.4rem, 10vw, 8rem);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    margin-top: 0.5rem;
+  }
+
+  .notfound__text {
+    max-width: 36ch;
+    color: var(--smoke);
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  }
+
+  .notfound__inner .btn {
+    margin-top: 0.75rem;
+  }
+</style>

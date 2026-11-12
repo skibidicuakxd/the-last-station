@@ -1,0 +1,143 @@
+---
+import '../styles/global.css';
+import { film } from '../content/film';
+import { publicFileExists } from '../lib/media';
+import { resolveVideo } from '../lib/video';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = `${film.title} — Cortometraje | Casa abierta`,
+  description = film.metaDescription,
+  image = '/media/og.jpg',
+  noindex = false,
+} = Astro.props;
+
+const origin = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, origin).href;
+const ogImage = new URL(image, origin).href;
+const heroExists = publicFileExists(film.heroImage);
+
+const video = resolveVideo(film.videoUrl);
+const eventComplete =
+  Boolean(film.event.dateISO) &&
+  !film.event.venue.includes('[') &&
+  !film.event.address.includes('[');
+const filmComplete =
+  Boolean(video) &&
+  Boolean(film.year) &&
+  !film.duration.includes('[') &&
+  !film.format.includes('[') &&
+  eventComplete;
+
+const jsonLd = filmComplete
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Movie',
+      name: film.title,
+      alternateName: film.titleEs,
+      description: film.synopsis,
+      image: ogImage,
+      url: canonical,
+      genre: film.genre.split('/').map((value) => value.trim()),
+      datePublished: film.year,
+      duration: film.duration,
+      inLanguage: 'es',
+      director: film.credits
+        .filter((credit) => credit.role.toLowerCase() === 'dirección' && !credit.name.includes('['))
+        .map((credit) => ({ '@type': 'Person', name: credit.name })),
+      actor: film.cast
+        .filter((member) => !member.actor.includes('['))
+        .map((member) => ({ '@type': 'Person', name: member.actor })),
+      event: {
+        '@type': 'ScreeningEvent',
+        name: film.event.label,
+        startDate: film.event.dateISO,
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: {
+          '@type': 'Place',
+          name: film.event.venue,
+          address: film.event.address,
+        },
+      },
+    }
+  : null;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#080907" />
+    <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={film.title} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${film.title} — ${film.titleEs}`} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link
+      rel="preload"
+      href="/fonts/barlow-condensed-800.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preload" href="/fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin />
+    {heroExists && <link rel="preload" as="image" href={film.heroImage} fetchpriority="high" />}
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
+    {jsonLd && <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">{film.labels.skipLink}</a>
+    <slot />
+
+    <script>
+      const items = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduced || !('IntersectionObserver' in window)) {
+        items.forEach((item) => item.classList.add('is-visible'));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+
+        items.forEach((item) => observer.observe(item));
+      }
+    </script>
+  </body>
+</html>

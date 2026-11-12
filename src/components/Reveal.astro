@@ -1,0 +1,14 @@
+---
+interface Props {
+  as?: 'div' | 'article' | 'li' | 'section' | 'header';
+  delay?: number;
+  class?: string;
+}
+
+const { as: Tag = 'div', delay = 0, class: className } = Astro.props;
+const style = delay > 0 ? `--reveal-delay: ${delay}ms` : undefined;
+---
+
+<Tag class:list={['reveal', className]} data-reveal style={style}>
+  <slot />
+</Tag>

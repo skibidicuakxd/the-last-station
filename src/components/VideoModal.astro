@@ -1,0 +1,253 @@
+---
+import { film } from '../content/film';
+import { resolveVideo } from '../lib/video';
+
+const video = resolveVideo(film.videoUrl);
+---
+
+<dialog
+  class="video-modal"
+  id="video-modal"
+  aria-labelledby="video-modal-title"
+  data-video-src={video?.src ?? ''}
+  data-video-kind={video?.kind ?? ''}
+>
+  <div class="video-modal__shell">
+    <div class="video-modal__bar">
+      <h2 class="video-modal__title mono" id="video-modal-title">{film.labels.videoTitle}</h2>
+      <button class="video-modal__close" type="button" data-video-close>
+        <span>{film.labels.closeVideo}</span>
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false">
+          <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.5"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="video-modal__stage" data-video-stage></div>
+
+    <div class="video-modal__foot mono">
+      <span>{film.title} — {film.titleEs}</span>
+      <span>{film.duration} · {film.year}</span>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .video-modal {
+    width: min(92vw, 76rem);
+    max-width: none;
+    max-height: 92dvh;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--ink);
+    color: var(--bone);
+    overflow: auto;
+  }
+
+  .video-modal::backdrop {
+    background: rgba(5, 6, 4, 0.93);
+  }
+
+  .video-modal[open] {
+    animation: modal-in 0.25s var(--ease);
+  }
+
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .video-modal__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem clamp(0.8rem, 2vw, 1.25rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .video-modal__title {
+    margin: 0;
+    color: var(--smoke);
+    font-size: 0.63rem;
+    letter-spacing: 0.13em;
+  }
+
+  .video-modal__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.61rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition:
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .video-modal__close:hover,
+  .video-modal__close:focus-visible {
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .video-modal__stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+
+  .video-modal__stage iframe,
+  .video-modal__stage video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #000;
+  }
+
+  .video-modal__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem clamp(0.8rem, 2vw, 1.25rem);
+    border-top: 1px solid var(--line);
+    color: var(--smoke);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 600px) {
+    .video-modal {
+      width: 100vw;
+      max-height: 100dvh;
+      margin: 0;
+      border-inline: 0;
+    }
+
+    .video-modal__foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.2rem;
+    }
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#video-modal');
+  const stage = dialog?.querySelector<HTMLElement>('[data-video-stage]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-video-close]');
+  const shell = dialog?.querySelector<HTMLElement>('.video-modal__shell');
+
+  if (dialog && stage && closeButton) {
+    const src = dialog.dataset.videoSrc ?? '';
+    const kind = dialog.dataset.videoKind ?? '';
+    let returnTarget: HTMLElement | null = null;
+
+    const buildPlayer = () => {
+      stage.replaceChildren();
+      if (!src) return;
+
+      if (kind === 'file') {
+        const player = document.createElement('video');
+        player.src = src;
+        player.controls = true;
+        player.autoplay = true;
+        player.playsInline = true;
+        player.preload = 'metadata';
+        player.setAttribute('aria-label', dialog.dataset.videoTitle ?? 'Cortometraje');
+        stage.append(player);
+        return;
+      }
+
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.title = 'The Last Station — cortometraje';
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      stage.append(iframe);
+    };
+
+    const destroyPlayer = () => {
+      stage.replaceChildren();
+      document.documentElement.classList.remove('modal-open');
+    };
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as Element | null;
+      const trigger = target?.closest<HTMLElement>('[data-video-open]');
+      if (!trigger || trigger.hasAttribute('disabled') || !src) return;
+
+      event.preventDefault();
+
+      returnTarget =
+        trigger.closest('#mobile-menu') !== null
+          ? document.querySelector<HTMLElement>('[data-menu-toggle]')
+          : trigger;
+
+      buildPlayer();
+      dialog.showModal();
+      document.documentElement.classList.add('modal-open');
+      closeButton.focus();
+    });
+
+    closeButton.addEventListener('click', () => dialog.close());
+
+    dialog.addEventListener('close', () => {
+      destroyPlayer();
+      returnTarget?.focus();
+      returnTarget = null;
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    dialog.addEventListener('cancel', () => {
+      // Escape dispara cancel; el evento close se encarga de limpiar el reproductor.
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), iframe, video, a[href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    });
+
+    // Evita que un clic en el fondo del shell cuente como clic en el backdrop.
+    shell?.addEventListener('click', (event) => event.stopPropagation());
+  }
+</script>

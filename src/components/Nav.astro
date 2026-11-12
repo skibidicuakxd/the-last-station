@@ -1,0 +1,512 @@
+---
+import { film } from '../content/film';
+import { resolveVideo } from '../lib/video';
+
+const video = resolveVideo(film.videoUrl);
+const navLinks = film.nav.map((link, index) => ({
+  ...link,
+  number: String(index + 1).padStart(2, '0'),
+}));
+---
+
+<header class="header" data-header>
+  <div class="nav container">
+    <a class="brand" href="#inicio" aria-label={`${film.title} — inicio`}>
+      <span class="brand__mark">TLS</span>
+      <span class="brand__name">THE LAST STATION</span>
+    </a>
+
+    <nav class="nav__desktop" aria-label="Navegación principal">
+      <ul class="nav__list">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a class="nav__link" href={link.href}>
+                <span class="nav__num" aria-hidden="true">
+                  {link.number}
+                </span>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="nav__actions">
+      {
+        video ? (
+          <button class="btn btn--ghost nav__cta" type="button" data-video-open>
+            <span class="btn__mark" aria-hidden="true" />
+            {film.labels.navCta}
+          </button>
+        ) : (
+          <button
+            class="btn btn--ghost nav__cta"
+            type="button"
+            disabled
+            aria-label={`${film.labels.navCta} — ${film.labels.playDisabled}`}
+          >
+            <span class="btn__mark" aria-hidden="true" />
+            {film.labels.navCta}
+          </button>
+        )
+      }
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-toggle
+      >
+        <span class="menu-toggle__text">{film.labels.menuOpen}</span>
+        <span class="menu-toggle__icon" aria-hidden="true">
+          <i></i>
+          <i></i>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="mobile-dialog" id="mobile-menu" aria-label="Menú de navegación">
+  <div class="mobile-dialog__top container">
+    <p class="mono" id="mobile-menu-title">
+      <span class="amber">TLS</span> / 2026
+    </p>
+    <button class="mobile-dialog__close" type="button" data-menu-close autofocus>
+      <span>{film.labels.menuClose}</span>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
+        <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.4"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-dialog__scroll container">
+    <nav aria-label="Navegación móvil">
+      <ul class="mobile-dialog__list">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a class="mobile-dialog__link" href={link.href}>
+                <span class="mobile-dialog__num mono" aria-hidden="true">
+                  {link.number}
+                </span>
+                <span>{link.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="mobile-dialog__foot">
+      <div class="mobile-dialog__event mono">
+        <p>{film.event.label}</p>
+        <p class="mobile-dialog__event-data">
+          {film.event.date} · {film.event.time}
+          <br />
+          {film.event.venue}
+        </p>
+      </div>
+
+      {
+        video ? (
+          <button class="btn btn--solid" type="button" data-video-open>
+            <span class="btn__mark" aria-hidden="true" />
+            {film.labels.watchFilm}
+          </button>
+        ) : (
+          <button
+            class="btn btn--solid"
+            type="button"
+            disabled
+            aria-label={`${film.labels.watchFilm} — ${film.labels.playDisabled}`}
+          >
+            <span class="btn__mark" aria-hidden="true" />
+            {film.labels.watchFilm}
+          </button>
+        )
+      }
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    background: linear-gradient(to bottom, rgba(8, 9, 7, 0.78), rgba(8, 9, 7, 0));
+    transition:
+      background-color 0.3s var(--ease),
+      border-color 0.3s var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+
+  .header.is-scrolled {
+    background: rgba(8, 9, 7, 0.96);
+    border-bottom-color: var(--line);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    min-height: var(--nav-h);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.75rem;
+    text-decoration: none;
+    flex: none;
+  }
+
+  .brand__mark {
+    padding: 0.25rem 0.38rem;
+    border: 1px solid var(--signal);
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.12rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .brand:hover .brand__mark,
+  .brand:focus-visible .brand__mark {
+    background: var(--signal);
+    color: var(--ink);
+  }
+
+  .brand__name {
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.61rem;
+    letter-spacing: 0.18em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .nav__desktop {
+    margin-left: auto;
+  }
+
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.4rem, 1.4vw, 1.35rem);
+  }
+
+  .nav__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.38rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.4rem;
+    color: var(--smoke);
+    font-family: var(--font-mono);
+    font-size: 0.67rem;
+    letter-spacing: 0.11em;
+    line-height: 1.4;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s var(--ease);
+  }
+
+  .nav__num {
+    color: rgba(215, 162, 62, 0.65);
+    font-size: 0.56rem;
+  }
+
+  .nav__link:hover,
+  .nav__link:focus-visible {
+    color: var(--bone);
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: none;
+  }
+
+  .nav__cta {
+    min-height: 2.5rem;
+    padding: 0.62rem 0.85rem;
+    font-size: 0.62rem;
+  }
+
+  .menu-toggle {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.55rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.63rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .menu-toggle__icon {
+    display: grid;
+    gap: 4px;
+    width: 1.15rem;
+  }
+
+  .menu-toggle__icon i {
+    display: block;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .mobile-dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--ink);
+    color: var(--bone);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-dialog::backdrop {
+    background: var(--ink);
+  }
+
+  .mobile-dialog__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--nav-h);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .mobile-dialog__close:hover,
+  .mobile-dialog__close:focus-visible {
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .mobile-dialog__scroll {
+    padding-block: clamp(1.5rem, 4vh, 2.75rem) 2rem;
+  }
+
+  .mobile-dialog__list {
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-dialog__list li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-dialog__link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-block: clamp(0.85rem, 2.2vh, 1.35rem);
+    color: var(--bone);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.35rem, 8.5vw, 4.2rem);
+    letter-spacing: -0.02em;
+    line-height: 0.92;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s var(--ease);
+  }
+
+  .mobile-dialog__link:hover,
+  .mobile-dialog__link:focus-visible {
+    color: var(--signal);
+  }
+
+  .mobile-dialog__num {
+    color: var(--signal);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+
+  .mobile-dialog__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: clamp(1.75rem, 5vh, 3rem);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-dialog__event {
+    color: var(--smoke);
+    font-size: 0.62rem;
+  }
+
+  .mobile-dialog__event-data {
+    margin-top: 0.45rem;
+    color: var(--bone);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 859px) {
+    .nav__desktop,
+    .nav__cta {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+    }
+
+    .brand__name {
+      font-size: 0.57rem;
+    }
+  }
+
+  @media (min-width: 860px) {
+    .mobile-dialog {
+      display: none;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .menu-toggle__text {
+      display: none;
+    }
+
+    .brand__name {
+      letter-spacing: 0.12em;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const dialog = document.querySelector<HTMLDialogElement>('#mobile-menu');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const desktop = window.matchMedia('(min-width: 860px)');
+
+  if (header) {
+    let ticking = false;
+
+    const update = () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 40);
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (toggle && dialog && closeButton) {
+    const openMenu = () => {
+      if (dialog.open) return;
+      dialog.showModal();
+      toggle.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('menu-open');
+      closeButton.focus();
+    };
+
+    const closeMenu = (restoreFocus = true) => {
+      if (!dialog.open) return;
+      dialog.close();
+      toggle.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('menu-open');
+      if (restoreFocus) toggle.focus();
+    };
+
+    toggle.addEventListener('click', () => {
+      if (dialog.open) closeMenu();
+      else openMenu();
+    });
+
+    closeButton.addEventListener('click', () => closeMenu());
+
+    dialog.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+      link.addEventListener('click', () => closeMenu(false));
+    });
+
+    dialog.querySelectorAll<HTMLElement>('[data-video-open]').forEach((trigger) => {
+      trigger.addEventListener('click', () => closeMenu(false));
+    });
+
+    dialog.addEventListener('close', () => {
+      toggle.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('menu-open');
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeMenu();
+    });
+
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    });
+
+    desktop.addEventListener('change', (event) => {
+      if (event.matches) closeMenu(false);
+    });
+  }
+</script>

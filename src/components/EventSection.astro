@@ -1,0 +1,384 @@
+---
+import { film } from '../content/film';
+
+const { event } = film;
+
+const addressReady =
+  event.address.trim().length > 0 && !event.address.includes('[') && !event.address.includes(']');
+
+const mapUrl = event.mapUrl.trim();
+const mapHref =
+  mapUrl && !mapUrl.includes('[')
+    ? mapUrl
+    : addressReady
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`
+      : '';
+
+const dateReady = event.dateISO.trim().length > 0;
+
+const eventTitleWords = film.labels.sectionEvent.split(' ');
+const eventTitleFirst = eventTitleWords[0] ?? '';
+const eventTitleRest = eventTitleWords.slice(1).join(' ');
+---
+
+<section class="event" id="funcion" aria-labelledby="event-title">
+  <div class="event__line" aria-hidden="true"></div>
+
+  <div class="container event__inner">
+    <div class="event__head">
+      <div class="event__head-main">
+        <p class="eyebrow">
+          <span class="eyebrow__num">04</span>
+          <span>/</span>
+          <span>Función</span>
+          <span class="eyebrow__rule"></span>
+          <span>Acceso único</span>
+        </p>
+        <h2 class="event__title display" id="event-title">
+          {eventTitleFirst}{eventTitleRest && <><br />{eventTitleRest}</>}<span class="amber">.</span>
+        </h2>
+      </div>
+
+      <div class="event__aside">
+        <p class="event__label mono">{event.label}</p>
+        <div
+          class="event__stamp"
+          aria-label={`${film.labels.admissionLabel}: ${event.admission}`}
+        >
+          <span class="mono">{film.labels.admissionLabel}</span>
+          <strong>{event.admission}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="event__body">
+      <div class="event__when">
+        <p class="event__k mono">{film.labels.dateLabel}</p>
+        <p class="event__date display">{event.date}</p>
+        <p class="event__time mono">
+          <span class="event__k">{film.labels.timeLabel}</span>
+          {event.time}
+        </p>
+        <p
+          class="event__countdown mono"
+          data-countdown
+          data-target={dateReady ? event.dateISO : ''}
+          data-prefix={film.labels.countdown}
+          data-ended={film.labels.countdownEnded}
+          hidden
+        >
+        </p>
+      </div>
+
+      <dl class="event__details">
+        <div class="event__detail">
+          <dt class="mono">{film.labels.venueLabel}</dt>
+          <dd>{event.venue}</dd>
+        </div>
+        <div class="event__detail">
+          <dt class="mono">{film.labels.addressLabel}</dt>
+          <dd>{event.address}</dd>
+        </div>
+        <div class="event__detail event__detail--map">
+          <dt class="mono">{film.labels.mapLabel}</dt>
+          <dd>
+            {
+              mapHref ? (
+                <a
+                  class="event__map link"
+                  href={mapHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {film.labels.map}
+                  <span aria-hidden="true"> ↗</span>
+                </a>
+              ) : (
+                <span class="event__map event__map--disabled" aria-disabled="true">
+                  {film.labels.map}
+                  <span class="event__pending mono">({film.labels.mapPending})</span>
+                </span>
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <p class="event__note mono">
+      <span class="event__note-mark" aria-hidden="true"></span>
+      {film.event.label} · Andén 00
+    </p>
+  </div>
+</section>
+
+<style>
+  .event {
+    position: relative;
+    padding-block: clamp(4.75rem, 9vw, 8.5rem);
+    background:
+      radial-gradient(ellipse 60% 50% at 8% 0%, rgba(215, 162, 62, 0.06), transparent 65%),
+      var(--coal);
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
+    overflow: hidden;
+  }
+
+  .event__line {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--signal) 0%,
+      rgba(215, 162, 62, 0.55) 45%,
+      var(--line) 100%
+    );
+  }
+
+  .event__inner {
+    position: relative;
+  }
+
+  .event__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    padding-bottom: clamp(2.25rem, 5vw, 3.75rem);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .event__head-main {
+    display: grid;
+    gap: clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .event__title {
+    font-size: clamp(3.15rem, 8.5vw, 8rem);
+    line-height: 0.8;
+    letter-spacing: -0.03em;
+  }
+
+  .event__aside {
+    display: grid;
+    justify-items: end;
+    gap: 1.35rem;
+    flex: none;
+  }
+
+  .event__label {
+    max-width: 16rem;
+    color: var(--smoke);
+    font-size: 0.64rem;
+    text-align: right;
+  }
+
+  .event__stamp {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--signal);
+    color: var(--signal);
+    text-align: center;
+    transform: rotate(-3.5deg);
+  }
+
+  .event__stamp span {
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+  }
+
+  .event__stamp strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .event__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    padding-block: clamp(2.25rem, 5vw, 3.75rem);
+  }
+
+  .event__when {
+    display: grid;
+    align-content: start;
+    gap: 0.55rem;
+    padding-right: clamp(0rem, 3vw, 2rem);
+    border-right: 1px solid var(--line);
+  }
+
+  .event__k {
+    color: var(--smoke);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+  }
+
+  .event__date {
+    font-size: clamp(2.35rem, 5.5vw, 4.8rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .event__time {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-top: 0.35rem;
+    color: var(--bone);
+    font-size: clamp(0.9rem, 0.8rem + 0.5vw, 1.1rem);
+    letter-spacing: 0.08em;
+  }
+
+  .event__countdown {
+    margin-top: 0.8rem;
+    color: var(--signal);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+  }
+
+  .event__details {
+    display: grid;
+    align-content: start;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .event__detail {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .event__detail dt {
+    color: var(--smoke);
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    padding-top: 0.2rem;
+  }
+
+  .event__detail dd {
+    margin: 0;
+    color: var(--bone);
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.12rem);
+    line-height: 1.5;
+  }
+
+  .event__map {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.75rem;
+    color: var(--signal);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .event__map--disabled {
+    color: var(--smoke);
+    cursor: not-allowed;
+    background: none;
+  }
+
+  .event__pending {
+    color: var(--smoke);
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+  }
+
+  .event__note {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding-top: 1.25rem;
+    color: var(--smoke);
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+  }
+
+  .event__note-mark {
+    width: 0.45rem;
+    height: 0.45rem;
+    background: var(--signal);
+    flex: none;
+  }
+
+  @media (max-width: 859px) {
+    .event__head {
+      flex-direction: column;
+    }
+
+    .event__aside {
+      width: 100%;
+      justify-items: start;
+    }
+
+    .event__label {
+      text-align: left;
+    }
+
+    .event__body {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .event__when {
+      padding-right: 0;
+      padding-bottom: 2rem;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .event__detail {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    .event__detail dt {
+      padding-top: 0;
+    }
+  }
+</style>
+
+<script>
+  const countdown = document.querySelector<HTMLElement>('[data-countdown]');
+  const target = countdown?.dataset.target;
+  const prefix = countdown?.dataset.prefix ?? '';
+  const ended = countdown?.dataset.ended ?? '';
+
+  if (countdown && target) {
+    const end = new Date(target).getTime();
+
+    if (!Number.isNaN(end)) {
+      const update = () => {
+        const diff = end - Date.now();
+
+        if (diff <= 0) {
+          countdown.textContent = ended;
+          countdown.hidden = false;
+          return;
+        }
+
+        const days = Math.floor(diff / 86_400_000);
+        const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+        const minutes = Math.floor((diff % 3_600_000) / 60_000);
+        countdown.textContent = `${prefix} ${days}d ${hours}h ${minutes}m`;
+        countdown.hidden = false;
+      };
+
+      update();
+      window.setInterval(update, 60_000);
+    }
+  }
+</script>

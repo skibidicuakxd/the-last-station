@@ -1,0 +1,373 @@
+---
+import { film } from '../content/film';
+import { publicFileExists } from '../lib/media';
+import { resolveVideo } from '../lib/video';
+
+const video = resolveVideo(film.videoUrl);
+const posterExists = publicFileExists(film.poster);
+const pendingLabel = video ? film.labels.posterPending : film.labels.videoPending;
+
+const technical = [
+  { label: film.labels.duration, value: film.duration },
+  { label: film.labels.genreLabel, value: film.genre },
+  { label: film.labels.yearLabel, value: film.year },
+  { label: film.labels.formatLabel, value: film.format },
+];
+---
+
+<section class="film section" id="el-corto" aria-labelledby="film-title">
+  <div class="container">
+    <header class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow__num">01</span>
+        <span>/</span>
+        <span>El corto</span>
+        <span class="eyebrow__rule"></span>
+        <span>EXP. 04</span>
+      </p>
+      <h2 class="section-title" id="film-title">{film.labels.sectionFilm}</h2>
+    </header>
+
+    <div class="film__grid">
+      <div class="film__video" data-reveal>
+        <div class="media media--16-9 poster">
+          {
+            posterExists ? (
+              <img
+                src={film.poster}
+                alt={film.posterAlt}
+                width="1200"
+                height="1600"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div
+                class="media__frame poster__pending"
+                role="img"
+                aria-label={`${pendingLabel}. ${film.posterAlt} Archivo poster.jpg, 1200 × 1600 px.`}
+              >
+                <span class="media__label">{pendingLabel}</span>
+                <span class="media__name">poster.jpg</span>
+                <span class="media__dims">1200 × 1600 px</span>
+              </div>
+            )
+          }
+
+          <span class="poster__badge mono">{film.duration}</span>
+
+          {
+            video ? (
+              <button
+                class="poster__play"
+                type="button"
+                data-video-open
+                aria-label={film.labels.play}
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                  <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                class="poster__play"
+                type="button"
+                disabled
+                aria-label={film.labels.playDisabled}
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                  <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                </svg>
+              </button>
+            )
+          }
+
+          <span class="poster__mark poster__mark--tl" aria-hidden="true"></span>
+          <span class="poster__mark poster__mark--br" aria-hidden="true"></span>
+        </div>
+
+        <p class="film__caption mono">
+          <span>{film.labels.filmCaption}</span>
+          <span aria-hidden="true">·</span>
+          <span>{film.duration}</span>
+          <span aria-hidden="true">·</span>
+          <span>{film.year}</span>
+        </p>
+      </div>
+
+      <div class="film__editorial" data-reveal style="--reveal-delay: 120ms">
+        <div class="film__block">
+          <h3 class="film__label mono">{film.labels.synopsis}</h3>
+          <p class="film__synopsis">{film.synopsis}</p>
+        </div>
+
+        <div class="film__block">
+          <h3 class="film__label mono">{film.labels.quickCredits}</h3>
+          <ul class="credits">
+            {
+              film.credits.map((credit) => (
+                <li class="credits__row">
+                  <span class="credits__role">{credit.role}</span>
+                  <span class="credits__dots" aria-hidden="true"></span>
+                  <span class="credits__name">{credit.name}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="film__block film__block--tech">
+          <h3 class="film__label mono">{film.labels.technicalSheet}</h3>
+          <dl class="tech">
+            {
+              technical.map((item) => (
+                <div class="tech__item">
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .film__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 62fr) minmax(0, 38fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  .poster {
+    position: relative;
+    background: var(--coal);
+  }
+
+  .poster > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .poster__pending {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: clamp(1rem, 2.5vw, 1.6rem);
+    text-align: left;
+    gap: 0.48rem;
+  }
+
+  .poster__pending::before {
+    inset: 0.75rem;
+  }
+
+  .poster__badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    padding: 0.38rem 0.55rem;
+    border: 1px solid var(--line-strong);
+    background: rgba(8, 9, 7, 0.82);
+    color: var(--bone);
+    font-size: 0.61rem;
+    letter-spacing: 0.1em;
+  }
+
+  .poster__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 3;
+    display: grid;
+    width: clamp(4rem, 8vw, 5.5rem);
+    height: clamp(4rem, 8vw, 5.5rem);
+    place-items: center;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--signal);
+    border-radius: 50%;
+    background: rgba(8, 9, 7, 0.62);
+    color: var(--signal);
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+
+  .poster__play svg {
+    margin-left: 0.18rem;
+  }
+
+  .poster__play:not(:disabled):hover,
+  .poster__play:not(:disabled):focus-visible {
+    background: var(--signal);
+    color: var(--ink);
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+
+  .poster__play:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .poster__mark {
+    position: absolute;
+    z-index: 2;
+    width: 0.65rem;
+    height: 0.65rem;
+    pointer-events: none;
+  }
+
+  .poster__mark--tl {
+    top: 0.45rem;
+    left: 0.45rem;
+    border-top: 1px solid var(--signal);
+    border-left: 1px solid var(--signal);
+  }
+
+  .poster__mark--br {
+    right: 0.45rem;
+    bottom: 0.45rem;
+    border-right: 1px solid var(--signal);
+    border-bottom: 1px solid var(--signal);
+  }
+
+  .film__caption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.85rem;
+    color: var(--smoke);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+  }
+
+  .film__caption span:nth-child(even) {
+    color: var(--line-strong);
+  }
+
+  .film__editorial {
+    display: grid;
+    gap: clamp(1.8rem, 3.5vw, 2.8rem);
+    padding-top: clamp(0.25rem, 1vw, 0.75rem);
+  }
+
+  .film__block {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .film__label {
+    color: var(--signal);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+  }
+
+  .film__synopsis {
+    max-width: 38ch;
+    color: var(--bone);
+    font-size: clamp(1.12rem, 1rem + 0.45vw, 1.35rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .credits {
+    border-top: 1px solid var(--line);
+  }
+
+  .credits__row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding-block: 0.56rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: clamp(0.65rem, 0.62rem + 0.12vw, 0.73rem);
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+  }
+
+  .credits__role {
+    color: var(--smoke);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+  }
+
+  .credits__dots {
+    flex: 1;
+    height: 1px;
+    min-width: 0.75rem;
+    background-image: linear-gradient(to right, var(--line-strong) 40%, transparent 0%);
+    background-size: 6px 1px;
+    background-repeat: repeat-x;
+    align-self: center;
+  }
+
+  .credits__name {
+    color: var(--bone);
+    text-align: right;
+  }
+
+  .film__block--tech {
+    padding-top: 0.25rem;
+  }
+
+  .tech {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .tech__item {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.7rem 0.8rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tech__item dt {
+    color: var(--smoke);
+    font-family: var(--font-mono);
+    font-size: 0.57rem;
+    letter-spacing: 0.13em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .tech__item dd {
+    margin: 0;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 899px) {
+    .film__grid {
+      grid-template-columns: 1fr;
+      gap: clamp(2.25rem, 6vw, 3rem);
+    }
+
+    .film__synopsis {
+      max-width: 58ch;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tech {
+      grid-template-columns: 1fr;
+    }
+
+    .poster__badge {
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+  }
+</style>

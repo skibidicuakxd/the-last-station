@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import FilmSection from '../components/FilmSection.astro';
+import CastSection from '../components/CastSection.astro';
+import ProductionSection from '../components/ProductionSection.astro';
+import EventSection from '../components/EventSection.astro';
+import Footer from '../components/Footer.astro';
+import VideoModal from '../components/VideoModal.astro';
+---
+
+<BaseLayout>
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <Hero />
+    <FilmSection />
+    <CastSection />
+    <ProductionSection />
+    <EventSection />
+  </main>
+
+  <Footer />
+  <VideoModal />
+</BaseLayout>

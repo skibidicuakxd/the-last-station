@@ -1,0 +1,608 @@
+---
+import { film } from '../content/film';
+import { publicFileExists } from '../lib/media';
+import { resolveVideo } from '../lib/video';
+
+const video = resolveVideo(film.videoUrl);
+const heroExists = publicFileExists(film.heroImage);
+
+const words = film.title.toUpperCase().split(' ');
+const titleLines =
+  words.length > 1 ? [words.slice(0, -1).join(' '), words[words.length - 1]] : words;
+
+const sleepers = Array.from({ length: 18 }, (_, index) => {
+  const t = (index + 1) / 18;
+  const y = 462 + Math.pow(t, 1.7) * 438;
+  const half = 34 + Math.pow(t, 1.15) * 256;
+  return { y: y.toFixed(1), x1: (800 - half - 14).toFixed(1), x2: (800 + half + 14).toFixed(1) };
+});
+
+const platformLights = Array.from({ length: 4 }, (_, index) => {
+  const t = (index + 1) / 5;
+  return {
+    x: (760 - t * 560).toFixed(1),
+    y: (466 + t * 300).toFixed(1),
+    r: (1.4 + t * 2.2).toFixed(1),
+  };
+});
+---
+
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    {
+      heroExists ? (
+        <img
+          src={film.heroImage}
+          alt=""
+          width="2400"
+          height="1350"
+          fetchpriority="high"
+          decoding="async"
+        />
+      ) : (
+        <div class="hero__atmosphere" data-parallax>
+          <svg
+            class="hero__svg"
+            viewBox="0 0 1600 900"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0b0c09" />
+                <stop offset="0.55" stop-color="#0a0b08" />
+                <stop offset="1" stop-color="#080907" />
+              </linearGradient>
+              <radialGradient id="fog" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#cfcab9" stop-opacity="0.3" />
+                <stop offset="0.55" stop-color="#cfcab9" stop-opacity="0.08" />
+                <stop offset="1" stop-color="#cfcab9" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="lampGlow" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#d7a23e" stop-opacity="0.55" />
+                <stop offset="0.35" stop-color="#d7a23e" stop-opacity="0.16" />
+                <stop offset="1" stop-color="#d7a23e" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="platform" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#15160f" />
+                <stop offset="1" stop-color="#0b0c09" />
+              </linearGradient>
+              <filter id="soften" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="26" />
+              </filter>
+            </defs>
+
+            <rect width="1600" height="900" fill="url(#sky)" />
+
+            <!-- Estructura lejana -->
+            <g fill="#0c0d0a">
+              <rect x="80" y="188" width="26" height="330" />
+              <rect x="356" y="212" width="18" height="300" />
+              <rect x="1180" y="200" width="22" height="315" />
+              <rect x="1452" y="176" width="30" height="345" />
+              <rect x="0" y="0" width="1600" height="96" />
+              <path d="M0 96h1600v10H0z" fill="#1a1b14" opacity="0.55" />
+            </g>
+
+            <!-- Vigas en fuga -->
+            <g stroke="#0b0c09" stroke-linecap="square" opacity="0.9">
+              <path d="M120 -40 L800 470" stroke-width="34" />
+              <path d="M470 -40 L800 470" stroke-width="18" />
+              <path d="M1130 -40 L800 470" stroke-width="18" />
+              <path d="M1480 -40 L800 470" stroke-width="34" />
+            </g>
+
+            <!-- Andenes -->
+            <path d="M0 900V598L734 466H770L520 900Z" fill="url(#platform)" />
+            <path d="M1600 900V598L866 466H830L1080 900Z" fill="url(#platform)" />
+            <path d="M0 598L734 466" stroke="#e9e3d5" stroke-opacity="0.13" stroke-width="1.5" />
+            <path d="M1600 598L866 466" stroke="#e9e3d5" stroke-opacity="0.13" stroke-width="1.5" />
+            <path d="M0 900h520" stroke="#e9e3d5" stroke-opacity="0.07" stroke-width="1" />
+            <path d="M1080 900h520" stroke="#e9e3d5" stroke-opacity="0.07" stroke-width="1" />
+
+            <!-- Vía -->
+            <path d="M520 900L770 470H830L1080 900Z" fill="#060705" />
+            {
+              sleepers.map((sleeper) => (
+                <line
+                  x1={sleeper.x1}
+                  y1={sleeper.y}
+                  x2={sleeper.x2}
+                  y2={sleeper.y}
+                  stroke="#e9e3d5"
+                  stroke-opacity="0.075"
+                  stroke-width="2.4"
+                />
+              ))
+            }
+            <path d="M520 900L770 470" stroke="#e9e3d5" stroke-opacity="0.2" stroke-width="2" />
+            <path d="M1080 900L830 470" stroke="#e9e3d5" stroke-opacity="0.2" stroke-width="2" />
+            <path d="M520 900L770 470" stroke="#e9e3d5" stroke-opacity="0.05" stroke-width="7" />
+            <path d="M1080 900L830 470" stroke="#e9e3d5" stroke-opacity="0.05" stroke-width="7" />
+
+            <!-- Niebla -->
+            <g filter="url(#soften)">
+              <ellipse cx="800" cy="500" rx="700" ry="150" fill="url(#fog)" />
+              <ellipse cx="420" cy="620" rx="420" ry="110" fill="url(#fog)" opacity="0.6" />
+              <ellipse cx="1220" cy="680" rx="380" ry="100" fill="url(#fog)" opacity="0.45" />
+            </g>
+
+            <!-- Luces de borde de andén -->
+            {
+              platformLights.map((light) => (
+                <circle
+                  cx={light.x}
+                  cy={light.y}
+                  r={light.r}
+                  fill="#d7a23e"
+                  opacity="0.65"
+                />
+              ))
+            }
+
+            <!-- Señal ámbar -->
+            <g class="hero__signal">
+              <path d="M1246 626V392" stroke="#1c1d16" stroke-width="7" />
+              <rect x="1228" y="342" width="36" height="50" fill="#0d0e0b" stroke="#2a2b22" />
+              <circle class="hero__lamp" cx="1246" cy="367" r="48" fill="url(#lampGlow)" />
+              <circle class="hero__lamp-core" cx="1246" cy="367" r="6" fill="#d7a23e" />
+              <path d="M1216 392h60" stroke="#2a2b22" stroke-width="2" />
+            </g>
+          </svg>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="hero__fog" aria-hidden="true"></div>
+  <p class="hero__anden" aria-hidden="true">00</p>
+
+  <div class="hero__inner container">
+    <div class="hero__top mono">
+      <p>TLS / 2026</p>
+      <p>{film.labels.archive} 00 — {film.labels.anden} 0</p>
+    </div>
+
+    <div class="hero__main">
+      <p class="hero__kicker mono">
+        <span class="hero__tick" aria-hidden="true"></span>
+        {film.event.label}
+      </p>
+
+      <h1 class="hero__title display" id="hero-title" aria-label={titleLines.join(' ')}>
+        {titleLines.map((line) => <span>{line}</span>)}
+      </h1>
+
+      <p class="hero__es">{film.titleEs}</p>
+      <p class="hero__tagline">{film.tagline}</p>
+
+      <div class="hero__actions">
+        {
+          video ? (
+            <button class="btn btn--solid" type="button" data-video-open>
+              <span class="btn__mark" aria-hidden="true" />
+              {film.labels.watchFilm}
+            </button>
+          ) : (
+            <button
+              class="btn btn--solid"
+              type="button"
+              disabled
+              aria-label={`${film.labels.watchFilm} — ${film.labels.playDisabled}`}
+            >
+              <span class="btn__mark" aria-hidden="true" />
+              {film.labels.watchFilm}
+            </button>
+          )
+        }
+        <a class="btn btn--ghost" href="#reparto">{film.labels.viewCast}</a>
+      </div>
+    </div>
+
+    <div class="hero__foot">
+      <dl class="hero__event">
+        <div class="hero__datum">
+          <dt>{film.labels.dateLabel}</dt>
+          <dd>{film.event.date}</dd>
+        </div>
+        <div class="hero__datum">
+          <dt>{film.labels.timeLabel}</dt>
+          <dd>{film.event.time}</dd>
+        </div>
+        <div class="hero__datum">
+          <dt>{film.labels.venueLabel}</dt>
+          <dd>{film.event.venue}</dd>
+        </div>
+        <div class="hero__datum">
+          <dt>{film.labels.admissionLabel}</dt>
+          <dd>{film.event.admission}</dd>
+        </div>
+      </dl>
+
+      <a class="scroll-hint" href="#el-corto">
+        <span>{film.labels.scrollHint}</span>
+        <i class="scroll-hint__line" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--ink);
+    isolation: isolate;
+  }
+
+  .hero__media,
+  .hero__media img,
+  .hero__atmosphere,
+  .hero__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__media img {
+    object-fit: cover;
+    opacity: 0.55;
+  }
+
+  .hero__atmosphere {
+    inset: -6% 0 0;
+    will-change: transform;
+  }
+
+  .hero__svg {
+    object-fit: cover;
+  }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(to top, var(--ink) 2%, rgba(8, 9, 7, 0.72) 34%, rgba(8, 9, 7, 0) 72%),
+      linear-gradient(to right, rgba(8, 9, 7, 0.55) 0%, rgba(8, 9, 7, 0) 60%);
+  }
+
+  .hero__fog {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(ellipse 60% 40% at 70% 45%, rgba(233, 227, 213, 0.05), transparent 70%),
+      radial-gradient(ellipse 90% 55% at 30% 100%, rgba(215, 162, 62, 0.045), transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 2.75vw, 2.25rem);
+    width: 100%;
+    padding-top: calc(var(--nav-h) + clamp(1.25rem, 3vw, 2.25rem));
+    padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .hero__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--smoke);
+    font-size: 0.64rem;
+  }
+
+  .hero__main {
+    margin-top: auto;
+    padding-block: clamp(1.25rem, 3.5vh, 2rem);
+  }
+
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--signal);
+    font-size: clamp(0.64rem, 0.6rem + 0.16vw, 0.75rem);
+  }
+
+  .hero__tick {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--signal);
+    box-shadow: 0 0 18px rgba(215, 162, 62, 0.55);
+    flex: none;
+  }
+
+  .hero__title {
+    margin-block: clamp(0.75rem, 2vw, 1.25rem) clamp(0.6rem, 1.5vw, 1rem);
+    font-size: clamp(4.35rem, 12.4vw, 12.5rem);
+    line-height: 0.78;
+    letter-spacing: -0.038em;
+    text-wrap: nowrap;
+  }
+
+  .hero__title span {
+    display: block;
+  }
+
+  .hero__es {
+    color: var(--bone);
+    font-size: clamp(0.95rem, 0.8rem + 0.9vw, 1.45rem);
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .hero__tagline {
+    max-width: 34ch;
+    margin-top: clamp(0.8rem, 1.5vw, 1.15rem);
+    color: var(--smoke);
+    font-size: clamp(1rem, 0.95rem + 0.35vw, 1.2rem);
+    line-height: 1.6;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(1.4rem, 2.5vw, 2rem);
+  }
+
+  .hero__foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding-top: clamp(1rem, 1.8vw, 1.4rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .hero__event {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, auto));
+    gap: clamp(1.1rem, 4vw, 3.75rem);
+  }
+
+  .hero__datum {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .hero__datum dt {
+    color: var(--smoke);
+    font-family: var(--font-mono);
+    font-size: 0.59rem;
+    letter-spacing: 0.16em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .hero__datum dd {
+    margin: 0;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: clamp(0.68rem, 0.64rem + 0.14vw, 0.78rem);
+    letter-spacing: 0.07em;
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--smoke);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    line-height: 1.4;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.2s var(--ease);
+  }
+
+  .scroll-hint:hover,
+  .scroll-hint:focus-visible {
+    color: var(--signal);
+  }
+
+  .scroll-hint__line {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: clamp(2rem, 4vw, 3.25rem);
+    overflow: hidden;
+    background: var(--line-strong);
+  }
+
+  .scroll-hint__line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--signal);
+    transform-origin: top;
+    animation: hint 2.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  @keyframes hint {
+    0% {
+      transform: translateY(-100%);
+    }
+    55%,
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  .hero__anden {
+    position: absolute;
+    top: 50%;
+    right: 0.1rem;
+    z-index: 1;
+    transform: translateY(-50%);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(233, 227, 213, 0.16);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(9rem, 25vw, 23rem);
+    line-height: 0.68;
+    letter-spacing: -0.05em;
+    writing-mode: vertical-rl;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero__signal {
+    opacity: 0.9;
+    animation: signal 7s ease-in-out infinite;
+  }
+
+  .hero__lamp {
+    animation: lamp 5.5s ease-in-out infinite;
+  }
+
+  @keyframes signal {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    48% {
+      opacity: 0.88;
+    }
+    50% {
+      opacity: 0.55;
+    }
+    52% {
+      opacity: 0.92;
+    }
+  }
+
+  @keyframes lamp {
+    0%,
+    100% {
+      opacity: 0.85;
+    }
+    47% {
+      opacity: 0.75;
+    }
+    49% {
+      opacity: 0.35;
+    }
+    51% {
+      opacity: 0.95;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .hero__anden {
+      right: -0.35rem;
+      font-size: clamp(8rem, 30vw, 16rem);
+      opacity: 0.8;
+    }
+
+    .hero__foot {
+      align-items: flex-start;
+      flex-direction: column-reverse;
+      gap: 1.25rem;
+    }
+
+    .hero__event {
+      width: 100%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 1rem;
+    }
+
+    .scroll-hint {
+      align-self: flex-end;
+    }
+
+    .scroll-hint__line {
+      height: 2rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hero__top p:last-child {
+      display: none;
+    }
+
+    .hero__title {
+      font-size: clamp(3.9rem, 15.5vw, 6rem);
+    }
+
+    .hero__tagline {
+      max-width: 30ch;
+    }
+
+    .hero__actions .btn {
+      flex: 1 1 auto;
+    }
+
+    .hero__anden {
+      top: 42%;
+      opacity: 0.55;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__atmosphere {
+      transform: none !important;
+    }
+
+    .hero__signal,
+    .hero__lamp,
+    .scroll-hint__line::after {
+      animation: none;
+    }
+
+    .scroll-hint__line::after {
+      transform: translateY(100%);
+    }
+  }
+</style>
+
+<script>
+  const atmosphere = document.querySelector<HTMLElement>('[data-parallax]');
+  const query = window.matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)');
+
+  if (atmosphere) {
+    let ticking = false;
+
+    const update = () => {
+      const offset = Math.min(window.scrollY, window.innerHeight);
+      atmosphere.style.transform = `translate3d(0, ${(offset * 0.12).toFixed(2)}px, 0)`;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    const sync = () => {
+      if (query.matches) {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        update();
+      } else {
+        window.removeEventListener('scroll', onScroll);
+        atmosphere.style.transform = '';
+      }
+    };
+
+    sync();
+    query.addEventListener('change', sync);
+  }
+</script>

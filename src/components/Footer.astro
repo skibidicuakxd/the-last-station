@@ -1,0 +1,338 @@
+---
+import { film } from '../content/film';
+
+const closing = film.footerClosing.replace(/[.]+$/, '');
+const links = film.social.filter((item) => item.url.trim().length > 0);
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__top">
+      <p class="mono">
+        <span class="amber">TLS</span> / 2026 — {film.labels.footerEnd}
+      </p>
+      <a class="footer__back link mono" href="#inicio">
+        {film.labels.backToTop}
+        <span aria-hidden="true">↑</span>
+      </a>
+    </div>
+
+    <p class="footer__closing display">
+      {closing}<span class="amber">.</span>
+    </p>
+
+    <div class="footer__grid">
+      <div class="footer__col footer__col--credits">
+        <h2 class="footer__title mono">{film.labels.footerCredits}</h2>
+        <ul class="footer__credits">
+          {
+            film.credits.map((credit) => (
+              <li>
+                <span class="footer__role">{credit.role}</span>
+                <span class="footer__name">{credit.name}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h2 class="footer__title mono">{film.labels.footerSocial}</h2>
+        {
+          links.length > 0 ? (
+            <ul class="footer__social">
+              {links.map((item) => (
+                <li>
+                  <a
+                    class="link"
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.label}
+                    <span aria-hidden="true"> ↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="footer__muted mono">{film.labels.socialPending}</p>
+          )
+        }
+
+        <h2 class="footer__title footer__title--spaced mono">{film.labels.thanks}</h2>
+        <p class="footer__thanks">{film.acknowledgements}</p>
+      </div>
+
+      <div class="footer__col">
+        <h2 class="footer__title mono">{film.labels.footerAbout}</h2>
+        <p class="footer__event mono">
+          {film.event.date} · {film.event.time}
+          <br />
+          {film.event.venue}
+          <br />
+          {film.event.address}
+        </p>
+        <p class="footer__admission mono">
+          <span class="footer__admission-mark" aria-hidden="true"></span>
+          {film.event.admission}
+        </p>
+
+        <nav class="footer__nav" aria-label="Navegación del pie">
+          <ul>
+            {
+              film.nav.map((item) => (
+                <li>
+                  <a class="link mono" href={item.href}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom mono">
+      <p>© {film.copyrightYear} {film.title} · {film.footerNote}</p>
+      <p>{film.labels.anden} 00 / TLS</p>
+    </div>
+  </div>
+
+  <p class="footer__anden display" aria-hidden="true">00</p>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3rem, 6vw, 5rem) 1.5rem;
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 55% 70% at 85% 100%, rgba(215, 162, 62, 0.05), transparent 65%),
+      var(--ink);
+  }
+
+  .footer__inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  .footer__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: clamp(2.25rem, 5vw, 3.5rem);
+    color: var(--smoke);
+    font-size: 0.61rem;
+  }
+
+  .footer__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--smoke);
+    font-size: 0.61rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .footer__back:hover,
+  .footer__back:focus-visible {
+    color: var(--signal);
+  }
+
+  .footer__closing {
+    max-width: 13ch;
+    font-size: clamp(2.8rem, 8.5vw, 7.5rem);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    margin-top: clamp(2.75rem, 6vw, 5rem);
+    padding-top: clamp(1.5rem, 3vw, 2.25rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .footer__col {
+    min-width: 0;
+  }
+
+  .footer__title {
+    margin-bottom: 0.85rem;
+    color: var(--signal);
+    font-size: 0.63rem;
+    letter-spacing: 0.16em;
+  }
+
+  .footer__title--spaced {
+    margin-top: 1.85rem;
+  }
+
+  .footer__credits {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .footer__credits li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.38rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    line-height: 1.45;
+  }
+
+  .footer__role {
+    color: var(--smoke);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .footer__name {
+    color: var(--bone);
+    text-align: right;
+  }
+
+  .footer__social {
+    display: grid;
+    gap: 0.35rem;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .footer__social a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .footer__muted {
+    color: var(--smoke);
+    font-size: 0.6rem;
+  }
+
+  .footer__thanks {
+    max-width: 24ch;
+    color: var(--smoke);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .footer__event {
+    color: var(--smoke);
+    font-size: 0.62rem;
+    line-height: 1.9;
+  }
+
+  .footer__admission {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+    color: var(--signal);
+    font-size: 0.62rem;
+  }
+
+  .footer__admission-mark {
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--signal);
+  }
+
+  .footer__nav {
+    margin-top: 1.5rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .footer__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+  }
+
+  .footer__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--smoke);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .footer__nav a:hover,
+  .footer__nav a:focus-visible {
+    color: var(--signal);
+  }
+
+  .footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+    color: var(--smoke);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+  }
+
+  .footer__anden {
+    position: absolute;
+    right: -0.08em;
+    bottom: -0.32em;
+    z-index: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(233, 227, 213, 0.09);
+    font-size: clamp(13rem, 34vw, 32rem);
+    line-height: 0.7;
+    letter-spacing: -0.06em;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @media (max-width: 899px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer__col--credits {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .footer__closing {
+      max-width: 11ch;
+    }
+
+    .footer__bottom {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+  }
+</style>
