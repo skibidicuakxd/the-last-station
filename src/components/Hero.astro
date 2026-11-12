@@ -5,6 +5,11 @@ import { resolveVideo } from '../lib/video';
 
 const video = resolveVideo(film.videoUrl);
 const heroExists = publicFileExists(film.heroImage);
+const initials = film.title
+  .split(/\s+/)
+  .map((word) => word.charAt(0))
+  .join('')
+  .toUpperCase();
 
 const words = film.title.toUpperCase().split(' ');
 const titleLines =
@@ -160,7 +165,7 @@ const platformLights = Array.from({ length: 4 }, (_, index) => {
 
   <div class="hero__inner container">
     <div class="hero__top mono">
-      <p>TLS / 2026</p>
+      <p>{initials} / {film.year}</p>
       <p>{film.labels.archive} 00 — {film.labels.anden} 0</p>
     </div>
 

@@ -3,13 +3,18 @@ import { film } from '../content/film';
 
 const closing = film.footerClosing.replace(/[.]+$/, '');
 const links = film.social.filter((item) => item.url.trim().length > 0);
+const initials = film.title
+  .split(/\s+/)
+  .map((word) => word.charAt(0))
+  .join('')
+  .toUpperCase();
 ---
 
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__top">
       <p class="mono">
-        <span class="amber">TLS</span> / 2026 — {film.labels.footerEnd}
+        <span class="amber">{initials}</span> / {film.year} — {film.labels.footerEnd}
       </p>
       <a class="footer__back link mono" href="#inicio">
         {film.labels.backToTop}
@@ -96,7 +101,7 @@ const links = film.social.filter((item) => item.url.trim().length > 0);
 
     <div class="footer__bottom mono">
       <p>© {film.copyrightYear} {film.title} · {film.footerNote}</p>
-      <p>{film.labels.anden} 00 / TLS</p>
+      <p>{film.labels.anden} 00 / {initials}</p>
     </div>
   </div>
 

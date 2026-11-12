@@ -11,6 +11,7 @@ const video = resolveVideo(film.videoUrl);
   aria-labelledby="video-modal-title"
   data-video-src={video?.src ?? ''}
   data-video-kind={video?.kind ?? ''}
+  data-video-title={film.labels.videoTitle}
 >
   <div class="video-modal__shell">
     <div class="video-modal__bar">
@@ -177,7 +178,7 @@ const video = resolveVideo(film.videoUrl);
 
       const iframe = document.createElement('iframe');
       iframe.src = src;
-      iframe.title = 'The Last Station — cortometraje';
+      iframe.title = dialog.dataset.videoTitle ?? 'Cortometraje';
       iframe.allow =
         'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       iframe.allowFullscreen = true;

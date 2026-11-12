@@ -3,6 +3,11 @@ import { film } from '../content/film';
 import { resolveVideo } from '../lib/video';
 
 const video = resolveVideo(film.videoUrl);
+const initials = film.title
+  .split(/\s+/)
+  .map((word) => word.charAt(0))
+  .join('')
+  .toUpperCase();
 const navLinks = film.nav.map((link, index) => ({
   ...link,
   number: String(index + 1).padStart(2, '0'),
@@ -12,8 +17,8 @@ const navLinks = film.nav.map((link, index) => ({
 <header class="header" data-header>
   <div class="nav container">
     <a class="brand" href="#inicio">
-      <span class="brand__mark">TLS</span>
-      <span class="brand__name">THE LAST STATION</span>
+      <span class="brand__mark">{initials}</span>
+      <span class="brand__name">{film.title}</span>
     </a>
 
     <nav class="nav__desktop" aria-label="Navegación principal">
@@ -73,7 +78,7 @@ const navLinks = film.nav.map((link, index) => ({
 <dialog class="mobile-dialog" id="mobile-menu" aria-label="Menú de navegación">
   <div class="mobile-dialog__top container">
     <p class="mono" id="mobile-menu-title">
-      <span class="amber">TLS</span> / 2026
+      <span class="amber">{initials}</span> / {film.year}
     </p>
     <button class="mobile-dialog__close" type="button" data-menu-close autofocus>
       <span>{film.labels.menuClose}</span>

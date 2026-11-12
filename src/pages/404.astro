@@ -1,18 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { film } from '../content/film';
+
+const initials = film.title
+  .split(/\s+/)
+  .map((word) => word.charAt(0))
+  .join('')
+  .toUpperCase();
 ---
 
 <BaseLayout
   title={`Andén no encontrado — ${film.title}`}
-  description="La vía termina aquí. Vuelve a la estación principal para consultar la función de The Last Station."
+  description={`La vía termina aquí. Vuelve a la estación principal para consultar la función de ${film.title}.`}
   noindex
 >
   <header class="notfound__header">
     <div class="container notfound__bar">
       <a class="notfound__brand" href="/">
-        <span class="notfound__mark">TLS</span>
-        <span class="mono">THE LAST STATION</span>
+        <span class="notfound__mark">{initials}</span>
+        <span class="mono">{film.title}</span>
       </a>
       <p class="mono smoke">Error 404</p>
     </div>
@@ -24,7 +30,7 @@ import { film } from '../content/film';
 
     <div class="container notfound__inner">
       <p class="eyebrow">
-        <span class="eyebrow__num">TLS / 2026</span>
+        <span class="eyebrow__num">{initials} / {film.year}</span>
         <span class="eyebrow__rule"></span>
         <span>Fin de la vía</span>
       </p>
@@ -72,6 +78,7 @@ import { film } from '../content/film';
   .notfound__brand .mono {
     font-size: 0.6rem;
     letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   .notfound__mark {
