@@ -2,7 +2,9 @@
 
 Sitio de una sola página para el cortometraje **The Last Station / La última estación**. Presenta el corto, el reparto, el proceso de producción y la función de casa abierta, con una dirección de arte inspirada en un expediente de estación abandonada.
 
-- Producción: [the-last-station.vercel.app](https://the-last-station.vercel.app) *(actualizar si el dominio final cambia)*
+- Producción: [the-last-station.vercel.app](https://the-last-station.vercel.app)
+- Repositorio: [github.com/skibidicuakxd/the-last-station](https://github.com/skibidicuakxd/the-last-station)
+- Auto-deploy: cada push a `main` publica en producción.
 - Contenido editable: [`src/content/film.ts`](src/content/film.ts)
 - Guía para el cliente: [`CONTENIDO.md`](CONTENIDO.md)
 
