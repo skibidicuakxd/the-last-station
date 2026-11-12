@@ -179,10 +179,10 @@ export const film: FilmContent = {
     {
       id: '01',
       character: 'PERSONAJE 01',
-      actor: 'INTÉRPRETE 01',
-      description: 'Descripción breve del personaje.',
+      actor: 'pato',
+      description: 'es un pato',
       photo: '/media/cast-01.jpg',
-      photoAlt: 'Retrato pendiente de PERSONAJE 01.',
+      photoAlt: 'Retrato de pato, intérprete del personaje 01.',
     },
     {
       id: '02',
