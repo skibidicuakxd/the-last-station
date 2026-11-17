@@ -166,15 +166,9 @@ const platformLights = Array.from({ length: 4 }, (_, index) => {
   <div class="hero__inner container">
     <div class="hero__top mono">
       <p>{initials} / {film.year}</p>
-      <p>{film.labels.archive} 00 — {film.labels.anden} 0</p>
     </div>
 
     <div class="hero__main">
-      <p class="hero__kicker mono">
-        <span class="hero__tick" aria-hidden="true"></span>
-        {film.event.label}
-      </p>
-
       <h1 class="hero__title display" id="hero-title" aria-label={titleLines.join(' ')}>
         {titleLines.map((line) => <span>{line}</span>)}
       </h1>
@@ -309,22 +303,6 @@ const platformLights = Array.from({ length: 4 }, (_, index) => {
   .hero__main {
     margin-top: auto;
     padding-block: clamp(1.25rem, 3.5vh, 2rem);
-  }
-
-  .hero__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--signal);
-    font-size: clamp(0.64rem, 0.6rem + 0.16vw, 0.75rem);
-  }
-
-  .hero__tick {
-    width: 0.5rem;
-    height: 0.5rem;
-    background: var(--signal);
-    box-shadow: 0 0 18px rgba(215, 162, 62, 0.55);
-    flex: none;
   }
 
   .hero__title {
@@ -539,10 +517,6 @@ const platformLights = Array.from({ length: 4 }, (_, index) => {
   }
 
   @media (max-width: 560px) {
-    .hero__top p:last-child {
-      display: none;
-    }
-
     .hero__title {
       font-size: clamp(3.9rem, 15.5vw, 6rem);
     }
