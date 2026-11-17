@@ -36,6 +36,9 @@ export interface EventInfo {
   mapUrl: string;
   /** Fecha en formato ISO (AAAA-MM-DDTHH:mm) solo cuando esté confirmada. */
   dateISO: string;
+  /** Archivo /media/funcion.jpg (1200 × 1600). */
+  image: string;
+  imageAlt: string;
 }
 
 export interface Labels {
@@ -161,6 +164,9 @@ export const film: FilmContent = {
     admission: 'Entrada libre',
     mapUrl: '',
     dateISO: '',
+    // REEMPLAZAR: imagen /media/funcion.jpg (1200 × 1600). Si falta, se muestra el marco pendiente.
+    image: '/media/funcion.jpg',
+    imageAlt: 'Imagen pendiente de la función de The Last Station.',
   },
 
   // REEMPLAZAR: nombres reales del equipo.

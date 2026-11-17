@@ -1,7 +1,10 @@
 ---
 import { film } from '../content/film';
+import { publicFileExists } from '../lib/media';
 
 const { event } = film;
+
+const eventImageExists = publicFileExists(event.image);
 
 const addressReady =
   event.address.trim().length > 0 && !event.address.includes('[') && !event.address.includes(']');
@@ -39,16 +42,30 @@ const eventTitleRest = eventTitleWords.slice(1).join(' ');
         </h2>
       </div>
 
-      <div class="event__aside">
-        <p class="event__label mono">{event.label}</p>
-        <div
-          class="event__stamp"
-          aria-label={`${film.labels.admissionLabel}: ${event.admission}`}
-        >
-          <span class="mono">{film.labels.admissionLabel}</span>
-          <strong>{event.admission}</strong>
-        </div>
-      </div>
+      <figure class="event__media media media--3-4" data-reveal>
+        {
+          eventImageExists ? (
+            <img
+              src={event.image}
+              alt={event.imageAlt}
+              width="1200"
+              height="1600"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div
+              class="media__frame"
+              role="img"
+              aria-label={`${film.labels.photoPending}. ${event.imageAlt} Archivo funcion.jpg, 1200 × 1600 px.`}
+            >
+              <span class="media__label">{film.labels.photoPending}</span>
+              <span class="media__name">funcion.jpg</span>
+              <span class="media__dims">1200 × 1600 px</span>
+            </div>
+          )
+        }
+      </figure>
     </div>
 
     <div class="event__body">
@@ -151,6 +168,7 @@ const eventTitleRest = eventTitleWords.slice(1).join(' ');
   .event__head-main {
     display: grid;
     gap: clamp(0.9rem, 2vw, 1.4rem);
+    min-width: 0;
   }
 
   .event__title {
@@ -159,42 +177,14 @@ const eventTitleRest = eventTitleWords.slice(1).join(' ');
     letter-spacing: -0.03em;
   }
 
-  .event__aside {
-    display: grid;
-    justify-items: end;
-    gap: 1.35rem;
+  .event__media {
+    width: clamp(13rem, 23vw, 18.5rem);
     flex: none;
-  }
-
-  .event__label {
-    max-width: 16rem;
-    color: var(--smoke);
-    font-size: 0.64rem;
-    text-align: right;
-  }
-
-  .event__stamp {
-    display: grid;
-    gap: 0.15rem;
-    padding: 0.7rem 1rem;
-    border: 1px solid var(--signal);
-    color: var(--signal);
-    text-align: center;
-    transform: rotate(-3.5deg);
-  }
-
-  .event__stamp span {
-    font-size: 0.54rem;
-    letter-spacing: 0.2em;
-  }
-
-  .event__stamp strong {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.4rem;
-    letter-spacing: 0.01em;
-    line-height: 1;
-    text-transform: uppercase;
+    align-self: flex-start;
+    margin: 0;
+    border-color: var(--line-strong);
+    background: var(--ink);
+    box-shadow: 0 1.25rem 3.75rem rgba(0, 0, 0, 0.32);
   }
 
   .event__body {
@@ -317,13 +307,12 @@ const eventTitleRest = eventTitleWords.slice(1).join(' ');
       flex-direction: column;
     }
 
-    .event__aside {
+    .event__head-main {
       width: 100%;
-      justify-items: start;
     }
 
-    .event__label {
-      text-align: left;
+    .event__media {
+      width: min(100%, 18rem);
     }
 
     .event__body {

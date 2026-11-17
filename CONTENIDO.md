@@ -118,6 +118,8 @@ event: {
   admission: 'Entrada libre',
   mapUrl: '',
   dateISO: '',
+  image: '/media/funcion.jpg',
+  imageAlt: 'Imagen pendiente de la función de The Last Station.',
 },
 ```
 
@@ -130,6 +132,8 @@ event: {
 | `admission` | `Entrada libre` | Condición de acceso. |
 | `mapUrl` | `https://maps.google.com/…` | Si está vacío, el botón de mapa se muestra deshabilitado. |
 | `dateISO` | `2026-12-12T19:30` | Formato ISO, sin zona horaria. Activa la cuenta atrás y el JSON-LD. |
+| `image` | `/media/funcion.jpg` | Imagen de la función, 1200 × 1600 px. Si falta, se muestra el marco pendiente. |
+| `imageAlt` | `Imagen pendiente…` | Texto alternativo de la imagen. |
 
 **Importante:** si `dateISO` está vacío, no se muestra cuenta atrás y no se emite el JSON-LD de la película. Es intencional para no publicar datos falsos.
 
@@ -176,6 +180,7 @@ Coloca los archivos en `public/media/` con estos nombres exactos:
 | --- | --- | --- | --- |
 | `hero.jpg` | 2400 × 1350 px | 16:9 | Fondo del hero |
 | `poster.jpg` | 1200 × 1600 px | 3:4 | Póster de la sección 01 |
+| `funcion.jpg` | 1200 × 1600 px | 3:4 | Imagen de la sección Función |
 | `cast-01.jpg` | 900 × 1200 px | 3:4 | Reparto, ficha 01 |
 | `cast-02.jpg` | 900 × 1200 px | 3:4 | Reparto, ficha 02 |
 | `cast-03.jpg` | 900 × 1200 px | 3:4 | Reparto, ficha 03 |

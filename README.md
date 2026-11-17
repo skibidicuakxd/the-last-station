@@ -106,6 +106,7 @@ Archivos esperados:
 | --- | --- | --- |
 | `public/media/hero.jpg` | 2400 × 1350 px | Fondo del hero |
 | `public/media/poster.jpg` | 1200 × 1600 px | Póster de la sección 01 |
+| `public/media/funcion.jpg` | 1200 × 1600 px | Imagen de la sección Función |
 | `public/media/cast-01.jpg` … `cast-06.jpg` | 900 × 1200 px | Retratos del reparto |
 | `public/media/bts-01.jpg` … `bts-03.jpg` | 1600 × 1067 px | Detrás de cámaras |
 | `public/media/og.jpg` | 1200 × 630 px | Tarjeta social (ya generada) |
